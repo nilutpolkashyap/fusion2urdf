@@ -1,6 +1,7 @@
 #Author-syuntoku14
 #Author-spacemaster85
-#Modified on Sun Jan 17 2021
+#Author-nilutpolkashyap
+#Modified on Sun Mar 17 2024
 #Description-Generate URDF file from Fusion 360
 
 import adsk, adsk.core, adsk.fusion, traceback
@@ -20,13 +21,11 @@ from .core import Link, Joint, Write
 # joint velocity: 100
 # supports "Revolute", "Rigid" and "Slider" joint types
 
-
-
 # I'm not sure how prismatic joint acts if there is no limit in fusion model
 
 def run(context):
     ui = None
-    success_msg = 'Successfully create URDF file'
+    success_msg = 'URDF files generation cancelled'
     msg = success_msg
 
     try:
@@ -51,6 +50,9 @@ def run(context):
         if save_dir == False:
             ui.messageBox('Fusion2URDF was canceled', title)
             return 0
+
+        packagde_dir = save_dir
+        output_msg = ' '
         
         appWin=tk.Tk()
         appWin.title("Choose your ROS Version")
@@ -70,11 +72,6 @@ def run(context):
                   command=sel).pack()
 
         appWin.mainloop()
-
-        
-
-        
-        
    
         save_dir= save_dir + '/' + package_name
         try: os.mkdir(save_dir)
@@ -113,22 +110,26 @@ def run(context):
         Write.write_urdf(joints_dict, links_xyz_dict, inertial_dict, material_dict, package_name, robot_name, save_dir, ros_selection.get() != 2)
         Write.write_materials_xacro(color_dict, robot_name, save_dir)
         Write.write_transmissions_xacro(joints_dict, links_xyz_dict, robot_name, save_dir)
-        if (ros_selection.get() == 2):
-
-            utils.copy_package(save_dir, package_dir_ros2)
-            utils.update_cmakelists(save_dir, package_name)
-            utils.update_package_xml(save_dir, package_name)
+        if (ros_selection.get() == 1):
+            utils.copy_package(save_dir, package_dir_ros1)
+            utils.update_cmakelists(save_dir, robot_name)
+            utils.update_package_xml(save_dir, robot_name)
+            
             utils.update_ros2_launchfile(save_dir, robot_name)
         else:
+            utils.copy_package(save_dir, package_dir_ros2)
+            utils.update_cmakelists(save_dir, robot_name)
+            utils.update_package_xml(save_dir, robot_name)
+            
             Write.write_gazebo_xacro(joints_dict, links_xyz_dict, inertial_dict, package_name, robot_name, save_dir)
             Write.write_display_launch(package_name, robot_name, save_dir)
             Write.write_gazebo_launch(package_name, robot_name, save_dir)
             Write.write_control_launch(package_name, robot_name, save_dir, joints_dict)
             Write.write_yaml(package_name, robot_name, save_dir, joints_dict)
  
-            utils.copy_package(save_dir, package_dir_ros1)
-            utils.update_cmakelists(save_dir, package_name)
-            utils.update_package_xml(save_dir, package_name)
+            # utils.copy_package(save_dir, package_dir_ros1)
+            # utils.update_cmakelists(save_dir, package_name)
+            # utils.update_package_xml(save_dir, package_name)
 
         # Generate STl files        
         utils.export_stl(app, save_dir)   
