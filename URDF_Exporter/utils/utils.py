@@ -124,7 +124,6 @@ def file_dialog(ui):
         return folderDlg.folder
     return False
 
-
 def origin2center_of_mass(inertia, center_of_mass, mass):
     """
     convert the moment of the inertia about the world coordinate into
@@ -147,7 +146,6 @@ def origin2center_of_mass(inertia, center_of_mass, mass):
     translation_matrix = [y**2+z**2, x**2+z**2, x**2+y**2,
                           -x*y, -y*z, -x*z]
     return [round(i - mass*t, 6) for i, t in zip(inertia, translation_matrix)]
-
 
 def prettify(elem):
     """
@@ -195,7 +193,6 @@ def copy_package(save_dir, package_dir):
     except:
         pass
     copy_tree(package_dir, save_dir)
-
 
 def update_cmakelists(save_dir, robot_name):
     """
@@ -277,11 +274,62 @@ def update_ros1_gazebo_launch(save_dir, robot_name):
         else:
             sys.stdout.write(line)
 
-def update_ros2_launchfile(save_dir, package_name):
-    file_name = save_dir + '/launch/robot_description.launch.py'
+def update_ros2_display_launch(save_dir, robot_name):
+    """
+    update ros 2 display launch file "save_dir/launch/display.launch.py"
+    displays robot urdf in Rviz
+    
+    Parameter
+    ---------
+    robot_name: str
+        name of the robot
+    save_dir: str
+        path of the repository to save
+    """
+    file_name = save_dir + '/launch/display.launch.py'
 
     for line in fileinput.input(file_name, inplace=True):
         if 'fusion2urdf' in line:
-            sys.stdout.write(line.replace('fusion2urdf', package_name))
+            sys.stdout.write(line.replace('fusion2urdf', robot_name))
+        else:
+            sys.stdout.write(line)
+
+def update_ros2_gazebo_launch(save_dir, robot_name):
+    """
+    update ros 1 gazebo classic launch file "save_dir/launch/gazebo.launch.py"
+    spawns robot urdf in gazebo classic
+    
+    Parameter
+    ---------
+    robot_name: str
+        name of the robot
+    save_dir: str
+        path of the repository to save
+    """
+    file_name = save_dir + '/launch/gazebo.launch.py'
+
+    for line in fileinput.input(file_name, inplace=True):
+        if 'fusion2urdf' in line:
+            sys.stdout.write(line.replace('fusion2urdf', robot_name))
+        else:
+            sys.stdout.write(line)
+
+def update_ros2_gz_sim_launch(save_dir, robot_name):
+    """
+    update ros 2 gazebo sim launch file "save_dir/launch/gz-sim.launch.py"
+    spawns robot urdf in gazebo sim (previously ignition)
+    
+    Parameter
+    ---------
+    robot_name: str
+        name of the robot
+    save_dir: str
+        path of the repository to save
+    """
+    file_name = save_dir + '/launch/gz-sim.launch.py'
+
+    for line in fileinput.input(file_name, inplace=True):
+        if 'fusion2urdf' in line:
+            sys.stdout.write(line.replace('fusion2urdf', robot_name))
         else:
             sys.stdout.write(line)

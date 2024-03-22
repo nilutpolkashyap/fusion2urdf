@@ -17,6 +17,7 @@ def write_link_urdf(joints_dict, repo, links_xyz_dict, file_name, inertial_dict,
     """
     Write links information into urdf "repo/file_name"
     
+    
     Parameters
     ----------
     joints_dict: dict
@@ -36,6 +37,8 @@ def write_link_urdf(joints_dict, repo, links_xyz_dict, file_name, inertial_dict,
     In this function, links_xyz_dict is set for write_joint_tran_urdf.
     The origin of the coordinate of center_of_mass is the coordinate of the link
     """
+    
+    
     
     with open(file_name, mode='a') as f:
         # for base_link
@@ -83,6 +86,7 @@ def write_link_urdf(joints_dict, repo, links_xyz_dict, file_name, inertial_dict,
 def write_joint_urdf(joints_dict, repo, links_xyz_dict, file_name):
     """
     Write joints and transmission information into urdf "repo/file_name"
+    
     
     Parameters
     ----------
