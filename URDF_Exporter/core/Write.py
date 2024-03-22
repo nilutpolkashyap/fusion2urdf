@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun May 12 20:46:26 2019
-Modified on Sun Jan 17 2021
+Created on Sun May 12 19:15:34 2019
+Modified on Thu Mar 21 2024
 
 @author: syuntoku
 @author: spacemaster85
+@author: nilutpolkashyap
 """
 
 import adsk, os, re
@@ -15,7 +16,6 @@ from ..utils import utils
 def write_link_urdf(joints_dict, repo, links_xyz_dict, file_name, inertial_dict, material_dict):
     """
     Write links information into urdf "repo/file_name"
-    
     
     Parameters
     ----------
@@ -36,8 +36,6 @@ def write_link_urdf(joints_dict, repo, links_xyz_dict, file_name, inertial_dict,
     In this function, links_xyz_dict is set for write_joint_tran_urdf.
     The origin of the coordinate of center_of_mass is the coordinate of the link
     """
-    
-    
     
     with open(file_name, mode='a') as f:
         # for base_link
@@ -85,7 +83,6 @@ def write_link_urdf(joints_dict, repo, links_xyz_dict, file_name, inertial_dict,
 def write_joint_urdf(joints_dict, repo, links_xyz_dict, file_name):
     """
     Write joints and transmission information into urdf "repo/file_name"
-    
     
     Parameters
     ----------
@@ -273,100 +270,6 @@ def write_gazebo_xacro(joints_dict, links_xyz_dict, inertial_dict, package_name,
             f.write('\n')
 
         f.write('</robot>\n')
-
-def write_display_launch(package_name, robot_name, save_dir):
-    """
-    write display launch file "save_dir/launch/display.launch"
-
-
-    Parameter
-    ---------
-    robot_name: str
-    name of the robot
-    save_dir: str
-    path of the repository to save
-    """   
-    try: os.mkdir(save_dir + '/launch')
-    except: pass     
-
-    launch = Element('launch')     
-
-    arg1 = SubElement(launch, 'arg')
-    arg1.attrib = {'name':'model', 'default':'$(find {})/urdf/{}.xacro'.format(package_name, robot_name)}
-
-    arg2 = SubElement(launch, 'arg')
-    arg2.attrib = {'name':'gui', 'default':'true'}
-
-    arg3 = SubElement(launch, 'arg')
-    arg3.attrib = {'name':'rvizconfig', 'default':'$(find {})/launch/urdf.rviz'.format(package_name)}
-
-    param1 = SubElement(launch, 'param')
-    param1.attrib = {'name':'robot_description', 'command':'$(find xacro)/xacro $(arg model)'}
-
-    param2 = SubElement(launch, 'param')
-    param2.attrib = {'name':'use_gui', 'value':'$(arg gui)'}
-
-    node1 = SubElement(launch, 'node')
-    node1.attrib = {'name':'joint_state_publisher', 'pkg':'joint_state_publisher', 'type':'joint_state_publisher'}
-
-    node2 = SubElement(launch, 'node')
-    node2.attrib = {'name':'robot_state_publisher', 'pkg':'robot_state_publisher', 'type':'robot_state_publisher'}
-
-    node3 = SubElement(launch, 'node')
-    node3.attrib = {'name':'rviz', 'pkg':'rviz', 'args':'-d $(arg rvizconfig)', 'type':'rviz', 'required':'true'}
-
-    launch_xml = "\n".join(utils.prettify(launch).split("\n")[1:])        
-
-    file_name = save_dir + '/launch/display.launch'    
-    with open(file_name, mode='w') as f:
-        f.write(launch_xml)
-
-def write_gazebo_launch(package_name, robot_name, save_dir):
-    """
-    write gazebo launch file "save_dir/launch/gazebo.launch"
-    
-    
-    Parameter
-    ---------
-    robot_name: str
-        name of the robot
-    save_dir: str
-        path of the repository to save
-    """
-    
-    try: os.mkdir(save_dir + '/launch')
-    except: pass     
-    
-    launch = Element('launch')
-    param = SubElement(launch, 'param')
-    param.attrib = {'name':'robot_description', 'command':'$(find xacro)/xacro $(find {})/urdf/{}.xacro'.format(package_name, robot_name)}
-
-    node = SubElement(launch, 'node')
-    node.attrib = {'name':'spawn_urdf', 'pkg':'gazebo_ros', 'type':'spawn_model',\
-                    'args':'-param robot_description -urdf -model {}'.format(robot_name)}
-
-    include_ =  SubElement(launch, 'include')
-    include_.attrib = {'file':'$(find gazebo_ros)/launch/empty_world.launch'}        
-    
-    number_of_args = 5
-    args = [None for i in range(number_of_args)]
-    args_name_value_pairs = [['paused', 'true'], ['use_sim_time', 'true'],
-                             ['gui', 'true'], ['headless', 'false'], 
-                             ['debug', 'false']]
-                             
-    for i, arg in enumerate(args):
-        arg = SubElement(include_, 'arg')
-        arg.attrib = {'name' : args_name_value_pairs[i][0] , 
-        'value' : args_name_value_pairs[i][1]}
-
-
-    
-    launch_xml = "\n".join(utils.prettify(launch).split("\n")[1:])        
-    
-    file_name = save_dir + '/launch/' + 'gazebo.launch'    
-    with open(file_name, mode='w') as f:
-        f.write(launch_xml)
-
 
 def write_control_launch(package_name, robot_name, save_dir, joints_dict):
     """

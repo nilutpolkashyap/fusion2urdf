@@ -237,6 +237,46 @@ def update_package_xml(save_dir, robot_name):
         else:
             sys.stdout.write(line)
 
+def update_ros1_display_launch(save_dir, robot_name):
+    """
+    update ros 1 display launch file "save_dir/launch/display.launch"
+    displays robot urdf in Rviz
+    
+    Parameter
+    ---------
+    robot_name: str
+        name of the robot
+    save_dir: str
+        path of the repository to save
+    """
+    file_name = save_dir + '/launch/display.launch'
+
+    for line in fileinput.input(file_name, inplace=True):
+        if 'fusion2urdf' in line:
+            sys.stdout.write(line.replace('fusion2urdf', robot_name))
+        else:
+            sys.stdout.write(line)
+
+def update_ros1_gazebo_launch(save_dir, robot_name):
+    """
+    update ros 1 gazebo classic launch file "save_dir/launch/gazebo.launch"
+    spawns robot urdf in gazebo classic
+    
+    Parameter
+    ---------
+    robot_name: str
+        name of the robot
+    save_dir: str
+        path of the repository to save
+    """
+    file_name = save_dir + '/launch/gazebo.launch'
+
+    for line in fileinput.input(file_name, inplace=True):
+        if 'fusion2urdf' in line:
+            sys.stdout.write(line.replace('fusion2urdf', robot_name))
+        else:
+            sys.stdout.write(line)
+
 def update_ros2_launchfile(save_dir, package_name):
     file_name = save_dir + '/launch/robot_description.launch.py'
 

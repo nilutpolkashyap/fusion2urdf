@@ -110,12 +110,18 @@ def run(context):
         Write.write_urdf(joints_dict, links_xyz_dict, inertial_dict, material_dict, package_name, robot_name, save_dir, ros_selection.get() != 2)
         Write.write_materials_xacro(color_dict, robot_name, save_dir)
         Write.write_transmissions_xacro(joints_dict, links_xyz_dict, robot_name, save_dir)
+
+        # Generate ROS 1 packages
         if (ros_selection.get() == 1):
             utils.copy_package(save_dir, package_dir_ros1)
             utils.update_cmakelists(save_dir, robot_name)
             utils.update_package_xml(save_dir, robot_name)
-            
-            utils.update_ros2_launchfile(save_dir, robot_name)
+
+            Write.write_gazebo_xacro(joints_dict, links_xyz_dict, inertial_dict, package_name, robot_name, save_dir)
+ 
+            utils.update_ros1_display_launch(save_dir, robot_name)
+            utils.update_ros1_gazebo_launch(save_dir, robot_name)
+
         else:
             utils.copy_package(save_dir, package_dir_ros2)
             utils.update_cmakelists(save_dir, robot_name)
